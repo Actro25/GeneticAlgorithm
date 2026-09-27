@@ -1,0 +1,48 @@
+##   --- .NET / C# Base Rules ---
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Log]/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# User-specific files & local settings
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider / Visual Studio cache
+.vs/
+
+# Packages / Tools
+[Pp]ackages/
+.paket/
+$tf/
+
+##   --- JetBrains Rider Specific ---
+# User-specific preferences and high-churn tasks
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# Database and data sources configuration (uncomment if you want to commit shared DB configurations)
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+
+# Rider auto-generated build / modules layout files
+.idea/**/*.iml
+.idea/**/contentModel.xml
+.idea/**/modules.xml
+
+##   --- Optional / Common Web API Additions ---
+# Local secrets or environment variables
+[Aa]ppsettings.local.json
+[Aa]ppsettings.*.local.json
+*.suo
