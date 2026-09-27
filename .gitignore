@@ -28,6 +28,7 @@ $tf/
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea
 
 # Database and data sources configuration (uncomment if you want to commit shared DB configurations)
 .idea/**/dataSources/
