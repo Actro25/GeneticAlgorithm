@@ -9,7 +9,7 @@ public struct Phenotype
     public double Coefficient;
 }
 
-public interface ICustomizableGeneticAlgorithm
+public interface IFunctionGeneticAlgorithm
 {
     public double GetFitness(int x);
 
@@ -22,12 +22,11 @@ public interface IGeneticAlgorithm
     List<Phenotype> InitialPopulation { get; set; }
 }
 
-public abstract class GeneticAlgorithmNew : IGeneticAlgorithm {
+public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticAlgorithm {
     public (int A, int B) Distance { get; set; }
     public List<Phenotype> Phenotypes { get; set; } = [];
     public List<Phenotype> InitialPopulation { get; set; } = [];
     
-    private ICustomizableGeneticAlgorithm _functions;
     private IPhenotypesCalculation _phenotypesCalculation;
     private ICrossover _crossover;
     private IMutation _mutation;
@@ -37,7 +36,6 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm {
     
     protected GeneticAlgorithmNew(
         (int a, int b) distance,
-        ICustomizableGeneticAlgorithm functions,
         IPhenotypesCalculation phenotypesCalculation,
         ICrossover crossover,
         IMutation mutation
@@ -45,7 +43,6 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm {
     {
         Distance = distance;
         
-        _functions = functions;
         _phenotypesCalculation = phenotypesCalculation;
         _crossover = crossover;
         _mutation = mutation;
@@ -64,10 +61,9 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm {
         for (int generation = 0; generation < maxGenerations; generation++)
         {
             GetNewPopulation(false);
-
-            var currentBest = Phenotypes
-                .OrderBy(f => f.FunctionValue)
-                .First();
+            var currentBest = Phenotypes.OrderBy(f => f.FunctionValue).First();
+            Console.WriteLine($"Gen {generation}: best={currentBest.Value}, " +
+                              $"distinct={Phenotypes.Select(p => p.Value).Distinct().Count()}");
 
             if (currentBest.FunctionValue < _bestPhenotype.FunctionValue)
             {
@@ -86,17 +82,8 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm {
         {
             var selectedIndexes = new HashSet<int>();
             var result = new List<Phenotype>();
-
             while (result.Count < _phenotypesCalculation.QuantityOfChromosomes)
-            {
-                int index = _random.Next(0, InitialPopulation.Count);
-
-                if (selectedIndexes.Add(index))
-                {
-                    result.Add(InitialPopulation[index]);
-                }
-            }
-
+                result.Add(InitialPopulation[_random.Next(InitialPopulation.Count)]);
             Phenotypes = result;
         }
 
@@ -114,7 +101,7 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm {
             .ToList();
 
         // Updating Data
-        _phenotypesCalculation.UpdatePhenotypes(newPopulation, _functions, Distance);
+        _phenotypesCalculation.UpdatePhenotypes(newPopulation, this, Distance);
         
         var previousBest = areWeLookingForMinimum
             ? Phenotypes.OrderBy(f => f.FunctionValue).First()
@@ -159,9 +146,9 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm {
 
             chromosome.Length = _crossover.BitQuantities;
 
-            var fitness = _functions.GetFitness(i);
+            var fitness = GetFitness(i);
 
-            var coefficient = _functions.GetCoefficient(fitness);
+            var coefficient = GetCoefficient(fitness);
 
             InitialPopulation.Add(new Phenotype
             {
@@ -172,4 +159,7 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm {
             });
         }
     }
+    
+    public abstract double GetFitness(int x);
+    public abstract double GetCoefficient(double fitness);
 }

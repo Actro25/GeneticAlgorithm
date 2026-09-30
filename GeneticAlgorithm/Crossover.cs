@@ -10,7 +10,12 @@ public class Crossover : ICrossover
 {
     public int BitQuantities { get; set; }
     private static readonly Random _random = new Random();
-    
+
+    public Crossover(int bitQuantities)
+    {
+        BitQuantities = bitQuantities;
+    }
+
     public void CrossoverWithOnePoint(List<Phenotype> phenotypes, ref List<Phenotype[]> chunkedResult)
     {
         foreach (var f in chunkedResult)

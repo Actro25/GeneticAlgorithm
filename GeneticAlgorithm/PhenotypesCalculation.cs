@@ -5,12 +5,17 @@ public interface IPhenotypesCalculation
 {
     int QuantityOfChromosomes { get; set; }   
     void CalculatePhenotypes(List<Phenotype> phenotypes, out List<Phenotype[]> chunkedResult);
-    public void UpdatePhenotypes(List<Phenotype> newPopulation, ICustomizableGeneticAlgorithm functions, (int A, int B) distance);
+    public void UpdatePhenotypes(List<Phenotype> newPopulation, IFunctionGeneticAlgorithm functions, (int A, int B) distance);
 }
 
 public class PhenotypesCalculation : IPhenotypesCalculation
 {
     public int QuantityOfChromosomes { get; set; }
+
+    public PhenotypesCalculation(int quantityOfChromosomes)
+    {
+        QuantityOfChromosomes = quantityOfChromosomes;
+    }
 
     public void CalculatePhenotypes(List<Phenotype> phenotypes, out List<Phenotype[]> chunkedResult)
     {
@@ -89,7 +94,7 @@ public class PhenotypesCalculation : IPhenotypesCalculation
             .Chunk(2)
             .ToList();
     }
-    public void UpdatePhenotypes(List<Phenotype> newPopulation, ICustomizableGeneticAlgorithm functions, (int A, int B) distance)
+    public void UpdatePhenotypes(List<Phenotype> newPopulation, IFunctionGeneticAlgorithm functions, (int A, int B) distance)
     {
         for (int i = 0; i < newPopulation.Count; i++)
         {
