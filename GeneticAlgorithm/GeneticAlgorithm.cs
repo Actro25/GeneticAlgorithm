@@ -11,9 +11,10 @@ public struct Phenotype
 
 public interface IFunctionGeneticAlgorithm
 {
-    public double GetFitness(int x);
+    public double GetFitness(double x);
 
     public double GetCoefficient(double fitness);
+    public double Precision { get; set; }
 }
 
 public interface IGeneticAlgorithm
@@ -24,6 +25,7 @@ public interface IGeneticAlgorithm
 
 public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticAlgorithm {
     public (int A, int B) Distance { get; set; }
+    public double Precision { get; set; } = 1;
     public List<Phenotype> Phenotypes { get; set; } = [];
     public List<Phenotype> InitialPopulation { get; set; } = [];
     
@@ -38,10 +40,12 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticA
         (int a, int b) distance,
         IPhenotypesCalculation phenotypesCalculation,
         ICrossover crossover,
-        IMutation mutation
+        IMutation mutation,
+        double precision
         )
     {
         Distance = distance;
+        Precision = precision;
         
         _phenotypesCalculation = phenotypesCalculation;
         _crossover = crossover;
@@ -72,7 +76,7 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticA
         }
 
         Console.WriteLine(
-            $"Answer is: {_bestPhenotype.Value}, " +
+            $"Answer is: {_bestPhenotype.Value * Precision}, " +
             $"Function value: {_bestPhenotype.FunctionValue}");
     }
     
@@ -137,22 +141,22 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticA
     
     private void LoadPhenotypes()
     {
+        InitialPopulation.Clear();
+
         for (int i = Distance.A; i <= Distance.B; i++)
         {
             int offset = i - Distance.A;
 
-            var chromosome =
-                new BitArray(new int[] { offset });
-
+            var chromosome = new BitArray(new int[] { offset });
             chromosome.Length = _crossover.BitQuantities;
 
-            var fitness = GetFitness(i);
-
+            double x = i * Precision;       
+            var fitness = GetFitness(x);
             var coefficient = GetCoefficient(fitness);
 
             InitialPopulation.Add(new Phenotype
             {
-                Value = i,
+                Value = i,              
                 Chromosome = chromosome,
                 FunctionValue = fitness,
                 Coefficient = coefficient,
@@ -160,6 +164,6 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticA
         }
     }
     
-    public abstract double GetFitness(int x);
+    public abstract double GetFitness(double x);
     public abstract double GetCoefficient(double fitness);
 }

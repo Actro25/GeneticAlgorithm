@@ -99,7 +99,7 @@ public class PhenotypesCalculation : IPhenotypesCalculation
         for (int i = 0; i < newPopulation.Count; i++)
         {
             int value = BitArrayToInt(newPopulation[i].Chromosome, distance);
-            double fitness = functions.GetFitness(value);
+            double fitness = functions.GetFitness(value * functions.Precision);
             double coefficient = functions.GetCoefficient(fitness);
 
             newPopulation[i] = new Phenotype
