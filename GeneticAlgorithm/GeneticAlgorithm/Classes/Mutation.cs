@@ -2,11 +2,11 @@
 
 public class Mutation : IMutation
 {
-    public int QuantityOfMutationsPercentage { get; set; }
+    public double QuantityOfMutationsPercentage { get; set; }
     public double ChanceOfMutation { get; set; }
     private static readonly Random _random = new Random();
 
-    public Mutation(int quantityOfMutations, double chanceOfMutation)
+    public Mutation(double quantityOfMutations, double chanceOfMutation)
     {
         QuantityOfMutationsPercentage = quantityOfMutations;
         ChanceOfMutation = chanceOfMutation;
@@ -14,11 +14,10 @@ public class Mutation : IMutation
 
     public void MutateOneGen(ref List<Phenotype[]> chunkedResult)
     {
-        double perBit = QuantityOfMutationsPercentage / 100.0;
         foreach (var pair in chunkedResult)
         foreach (var p in pair)
             for (int i = 0; i < p.Chromosome.Length; i++)
-                if (_random.NextDouble() < perBit)
+                if (_random.NextDouble() < QuantityOfMutationsPercentage)
                     p.Chromosome[i] = !p.Chromosome[i];
     }
 }

@@ -5,5 +5,5 @@ namespace GeneticAlgorithm.Interfaces;
 
 public interface IGeneticAlgorithmDebug
 {
-    void PrintPhenotypes(List<Phenotype> phenotypes);
+    void PrintPhenotypes(List<Phenotype> phenotypes, string title);
 }

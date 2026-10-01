@@ -16,7 +16,7 @@ public interface IFunctionGeneticAlgorithm
 {
     public double Precision { get; set; }
     public double GetFitness(double x);
-    public void DebugPhenotypes();
+    public void DebugPhenotypes(List<Phenotype> phenotypes, string title);
     public double GetCoefficient(double fitness);
 }
 
@@ -62,18 +62,19 @@ public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgo
     public void GetMinimum(int maxGenerations = 1000)
     {
         LoadPhenotypes();
-
+        DebugPhenotypes(InitialPopulation, "Initial population");
+        
         GetNewPopulation(true);
-        DebugPhenotypes();
+        DebugPhenotypes(Phenotypes, "№0 Generation");
         
         _bestPhenotype = Phenotypes
             .OrderBy(f => f.FunctionValue)
             .First();
 
-        for (int generation = 0; generation < maxGenerations; generation++)
+        for (int generation = 1; generation < maxGenerations; generation++)
         {
             GetNewPopulation(false);
-            DebugPhenotypes();
+            DebugPhenotypes(Phenotypes, $"№{generation} Generation");
             var currentBest = Phenotypes.OrderBy(f => f.FunctionValue).First();
 
             if (currentBest.FunctionValue < _bestPhenotype.FunctionValue)
@@ -146,11 +147,11 @@ public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgo
         Phenotypes = newPopulation;
     }
 
-    public void DebugPhenotypes()
+    public void DebugPhenotypes(List<Phenotype> phenotypes, string title)
     {
         if(_debug != null)
         {
-            _debug.PrintPhenotypes(Phenotypes);
+            _debug.PrintPhenotypes(phenotypes, title);
             Console.Write("To continue to the next iteration click at any button...");
             Console.ReadLine();
             Console.WriteLine("");
@@ -166,10 +167,17 @@ public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgo
 
         for (int offset = 0; offset <= totalSteps; offset++)
         {
+            //Calculation real X value considering Precision.
             double x = Distance.A + (offset * Precision);
         
             if (x > Distance.B) x = Distance.B;
 
+            /*
+             * There we convert offset into BitArray for algorithm.
+             * Why is offset? Because there is something wierd with negative numbers, so
+             * I decided to use offset as id of X. If the X is his value then offset is his id.
+             * The offset is always positive and there isn't any problem with it.
+             */
             var chromosome = new BitArray(new int[] { offset })
             {
                 Length = _crossover.BitQuantities

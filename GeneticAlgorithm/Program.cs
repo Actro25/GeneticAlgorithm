@@ -35,8 +35,7 @@ class Program
 
 static void InputData()
 {
-    double a, b, precision, chanceOfMutation;
-    int populationPercentage, quantityOfMutation;
+    double a, b, precision, chanceOfMutation, populationPercentage, quantityOfMutation;
     var inv = System.Globalization.CultureInfo.InvariantCulture;
     var style = System.Globalization.NumberStyles.Float;
 
@@ -58,23 +57,25 @@ static void InputData()
 
     while (true)
     {
-        Console.Write("Enter size of population (1-100 % of range): ");
-        if (int.TryParse(Console.ReadLine(), out populationPercentage)
-            && populationPercentage is >= 1 and <= 100) break;
-        Console.WriteLine("Error: enter a whole number from 1 to 100.");
+        Console.Write("Enter size of population that will be at the next populations (0.1 = 10% etc., number has to be greater than 0): ");
+        string text = (Console.ReadLine() ?? "").Replace(',', '.');
+        if (double.TryParse(text, out populationPercentage)
+            && populationPercentage is > 0 and <= 1) break;
+        Console.WriteLine("Error: enter a whole number from 0 to 1.");
     }
 
     while (true)
     {
-        Console.Write("Enter a percentage of population that will be mutated (0-100): ");
-        if (int.TryParse(Console.ReadLine(), out quantityOfMutation)
-            && quantityOfMutation is >= 0 and <= 100) break;
-        Console.WriteLine("Error: enter a whole number from 0 to 100.");
+        Console.Write("Enter a size of population that will be mutated (0.1 = 10% etc.): ");
+        string text = (Console.ReadLine() ?? "").Replace(',', '.');
+        if (double.TryParse(text, out quantityOfMutation)
+            && quantityOfMutation is >= 0 and <= 1) break;
+        Console.WriteLine("Error: enter a whole number from 0 to 1.");
     }
 
     while (true)
     {
-        Console.Write("Enter a chance of mutation (0.1 = 10%, from 0 to 1): ");
+        Console.Write("Enter a chance of mutation (0.1 = 10% etc.): ");
         string text = (Console.ReadLine() ?? "").Replace(',', '.');
         if (double.TryParse(text, style, inv, out chanceOfMutation)
             && chanceOfMutation is >= 0 and <= 1) break;
@@ -93,9 +94,8 @@ static void InputData()
         break;
     }
 
-    var distance = (A: (int)Math.Round(a / precision), B: (int)Math.Round(b / precision));
-    var (bitQuantity, quantityOfChromosome) = GetQuantity(populationPercentage, distance);
-    quantityOfChromosome = Math.Max(10, quantityOfChromosome);
+    var distance = (A: (int)Math.Round(a, MidpointRounding.ToEven), B: (int)Math.Round(b, MidpointRounding.ToEven));
+    var (bitQuantity, quantityOfChromosome) = GetQuantity(populationPercentage, distance, precision);
 
     IPhenotypesCalculation phenotypesCalculation = new PhenotypesCalculation(quantityOfChromosome);
     ICrossover crossover = new Crossover(bitQuantity);
@@ -106,10 +106,9 @@ static void InputData()
     ga.GetMinimum();
 }
 
-    static (int, int) GetQuantity(int populationPercentage, (double A, double B) distance)
+    static (int, int) GetQuantity(double populationPercentage, (double A, double B) distance, double precision)
     {
-        var rangeSize =
-            Math.Abs(distance.B - distance.A) + 1;
+        var rangeSize = (Math.Abs(distance.B - distance.A) / precision) + 1;
 
         for (int i = 1; ; i++)
         {
@@ -118,8 +117,7 @@ static void InputData()
                 return (
                     i,
                     (int)Math.Round(
-                        rangeSize *
-                        (populationPercentage / 100.0),
+                        rangeSize * populationPercentage,
                         MidpointRounding.ToEven)
                 );
             }
