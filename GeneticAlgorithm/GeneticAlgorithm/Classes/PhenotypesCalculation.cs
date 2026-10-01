@@ -1,12 +1,6 @@
 ﻿using System.Collections;
-namespace GeneticAlgorithm;
 
-public interface IPhenotypesCalculation
-{
-    int QuantityOfChromosomes { get; set; }   
-    void CalculatePhenotypes(List<Phenotype> phenotypes, out List<Phenotype[]> chunkedResult);
-    public void UpdatePhenotypes(List<Phenotype> newPopulation, IFunctionGeneticAlgorithm functions, (int A, int B) distance);
-}
+namespace GeneticAlgorithm.Classes;
 
 public class PhenotypesCalculation : IPhenotypesCalculation
 {
@@ -20,7 +14,7 @@ public class PhenotypesCalculation : IPhenotypesCalculation
     public void CalculatePhenotypes(List<Phenotype> phenotypes, out List<Phenotype[]> chunkedResult)
     {
         //Creating new temporary fenotypes.
-        var fenotypeList = new List<(int Value, int QuantityInNewArray)>();
+        var fenotypeList = new List<(double Value, int QuantityInNewArray)>();
         
         //Sum of all cofficients for formula.
         double sumOfCoefficient = phenotypes.Sum(f => f.Coefficient);

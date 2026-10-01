@@ -1,13 +1,17 @@
-﻿namespace GeneticAlgorithm;
+﻿using GeneticAlgorithm.Classes;
+using GeneticAlgorithm.Interfaces;
 
-public class MyGeneticAlgorithm : GeneticAlgorithmNew
+namespace GeneticAlgorithm;
+
+public class MyGeneticAlgorithm : GeneticAlgorithm
 {
     public MyGeneticAlgorithm(
         (int a, int b) distance,
+        double precision,
         IPhenotypesCalculation phenotypesCalculation,
         ICrossover crossover,
         IMutation mutation,
-        double precision) : base(distance, phenotypesCalculation, crossover, mutation, precision)
+        IGeneticAlgorithmDebug debug = null) : base(distance, precision, phenotypesCalculation, crossover, mutation, debug)
     {
     }
 
@@ -96,8 +100,9 @@ static void InputData()
     IPhenotypesCalculation phenotypesCalculation = new PhenotypesCalculation(quantityOfChromosome);
     ICrossover crossover = new Crossover(bitQuantity);
     IMutation mutation = new Mutation(quantityOfMutation, chanceOfMutation);
-
-    GeneticAlgorithmNew ga = new MyGeneticAlgorithm(distance, phenotypesCalculation, crossover, mutation, precision);
+    IGeneticAlgorithmDebug debug = new GeneticAlgorithmDebug();
+    
+    GeneticAlgorithm ga = new MyGeneticAlgorithm(distance, precision, phenotypesCalculation, crossover, mutation, debug);
     ga.GetMinimum();
 }
 

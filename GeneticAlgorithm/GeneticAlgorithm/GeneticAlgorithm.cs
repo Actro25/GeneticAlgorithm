@@ -1,9 +1,12 @@
 ﻿using System.Collections;
+using System.Text;
+using GeneticAlgorithm.Interfaces;
+
 namespace GeneticAlgorithm;
 
 public struct Phenotype
 {
-    public int Value;
+    public double Value;
     public BitArray Chromosome;
     public double FunctionValue;
     public double Coefficient;
@@ -11,10 +14,10 @@ public struct Phenotype
 
 public interface IFunctionGeneticAlgorithm
 {
-    public double GetFitness(double x);
-
-    public double GetCoefficient(double fitness);
     public double Precision { get; set; }
+    public double GetFitness(double x);
+    public void DebugPhenotypes();
+    public double GetCoefficient(double fitness);
 }
 
 public interface IGeneticAlgorithm
@@ -23,25 +26,28 @@ public interface IGeneticAlgorithm
     List<Phenotype> InitialPopulation { get; set; }
 }
 
-public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticAlgorithm {
+public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgorithm {
     public (int A, int B) Distance { get; set; }
     public double Precision { get; set; } = 1;
     public List<Phenotype> Phenotypes { get; set; } = [];
     public List<Phenotype> InitialPopulation { get; set; } = [];
     
-    private IPhenotypesCalculation _phenotypesCalculation;
-    private ICrossover _crossover;
-    private IMutation _mutation;
+    private readonly IPhenotypesCalculation _phenotypesCalculation;
+    private readonly ICrossover _crossover;
+    private readonly IMutation _mutation;
+    private readonly IGeneticAlgorithmDebug? _debug;
     
-    private static readonly Random _random = new Random();
+    private readonly Random _random = new Random();
+    
     private Phenotype _bestPhenotype;
     
-    protected GeneticAlgorithmNew(
+    protected GeneticAlgorithm(
         (int a, int b) distance,
+        double precision,
         IPhenotypesCalculation phenotypesCalculation,
         ICrossover crossover,
         IMutation mutation,
-        double precision
+        IGeneticAlgorithmDebug? debug = null
         )
     {
         Distance = distance;
@@ -50,6 +56,7 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticA
         _phenotypesCalculation = phenotypesCalculation;
         _crossover = crossover;
         _mutation = mutation;
+        _debug = debug;
     }
     
     public void GetMinimum(int maxGenerations = 1000)
@@ -57,7 +64,8 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticA
         LoadPhenotypes();
 
         GetNewPopulation(true);
-
+        DebugPhenotypes();
+        
         _bestPhenotype = Phenotypes
             .OrderBy(f => f.FunctionValue)
             .First();
@@ -65,9 +73,8 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticA
         for (int generation = 0; generation < maxGenerations; generation++)
         {
             GetNewPopulation(false);
+            DebugPhenotypes();
             var currentBest = Phenotypes.OrderBy(f => f.FunctionValue).First();
-            Console.WriteLine($"Gen {generation}: best={currentBest.Value}, " +
-                              $"distinct={Phenotypes.Select(p => p.Value).Distinct().Count()}");
 
             if (currentBest.FunctionValue < _bestPhenotype.FunctionValue)
             {
@@ -138,25 +145,42 @@ public abstract class GeneticAlgorithmNew : IGeneticAlgorithm, IFunctionGeneticA
 
         Phenotypes = newPopulation;
     }
-    
+
+    public void DebugPhenotypes()
+    {
+        if(_debug != null)
+        {
+            _debug.PrintPhenotypes(Phenotypes);
+            Console.Write("To continue to the next iteration click at any button...");
+            Console.ReadLine();
+            Console.WriteLine("");
+        }
+    }
+
     private void LoadPhenotypes()
     {
         InitialPopulation.Clear();
 
-        for (int i = Distance.A; i <= Distance.B; i++)
+        double range = Math.Abs(Distance.B - Distance.A);
+        int totalSteps = (int)Math.Ceiling(range / Precision);
+
+        for (int offset = 0; offset <= totalSteps; offset++)
         {
-            int offset = i - Distance.A;
+            double x = Distance.A + (offset * Precision);
+        
+            if (x > Distance.B) x = Distance.B;
 
-            var chromosome = new BitArray(new int[] { offset });
-            chromosome.Length = _crossover.BitQuantities;
+            var chromosome = new BitArray(new int[] { offset })
+            {
+                Length = _crossover.BitQuantities
+            };
 
-            double x = i * Precision;       
-            var fitness = GetFitness(x);
-            var coefficient = GetCoefficient(fitness);
+            double fitness = GetFitness(x);
+            double coefficient = GetCoefficient(fitness);
 
             InitialPopulation.Add(new Phenotype
             {
-                Value = i,              
+                Value = x, 
                 Chromosome = chromosome,
                 FunctionValue = fitness,
                 Coefficient = coefficient,
