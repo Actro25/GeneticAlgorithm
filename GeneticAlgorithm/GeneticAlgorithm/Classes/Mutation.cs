@@ -14,10 +14,26 @@ public class Mutation : IMutation
 
     public void MutateOneGen(ref List<Phenotype[]> chunkedResult)
     {
-        foreach (var pair in chunkedResult)
-        foreach (var p in pair)
-            for (int i = 0; i < p.Chromosome.Length; i++)
-                if (_random.NextDouble() < QuantityOfMutationsPercentage)
-                    p.Chromosome[i] = !p.Chromosome[i];
+        if (_random.NextDouble() > ChanceOfMutation)
+            return;
+        
+        //Getting quantity of loops
+        var quantityOfBits = chunkedResult.First()[0].Chromosome.Length;
+        var quantityOfPhenotypesInChunk = chunkedResult.First().Length;
+        var quantityOfPairs = chunkedResult.Count;
+        
+        var quantityOfAllBits = quantityOfBits * quantityOfPhenotypesInChunk * quantityOfPairs;
+        
+        var quantityOfLoops = (int)Math.Round(quantityOfAllBits * QuantityOfMutationsPercentage, MidpointRounding.ToEven);
+
+        //Calculation every random mutation in loop
+        for (var i = 0; i < quantityOfLoops; i++)
+        {
+            var chosenPair = _random.Next(quantityOfPairs);
+            var chosenPhenotypeInChunk = _random.Next(quantityOfPhenotypesInChunk);
+            var chosenBits = _random.Next(quantityOfBits);
+            
+            chunkedResult[chosenPair][chosenPhenotypeInChunk].Chromosome[chosenBits] = !chunkedResult[chosenPair][chosenPhenotypeInChunk].Chromosome[chosenBits];
+        }
     }
 }
