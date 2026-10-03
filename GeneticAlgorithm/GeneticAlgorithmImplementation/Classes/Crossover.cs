@@ -1,4 +1,6 @@
-﻿namespace GeneticAlgorithm.Classes;
+﻿using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+
+namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;
 
 public class Crossover : ICrossover
 {
@@ -23,16 +25,16 @@ public class Crossover : ICrossover
             var point = _random.Next(1, BitQuantities);
 
             //Here we're doing Krosover to the point.
-            for (int i = point; i < BitQuantities; i++)
+            for (var i = point; i < BitQuantities; i++)
             {
                 (
-                        f[0].Chromosome[i],
-                        f[1].Chromosome[i]
-                    ) =
-                    (
-                        f[1].Chromosome[i],
-                        f[0].Chromosome[i]
-                    );
+                    f[0].Chromosome[i],
+                    f[1].Chromosome[i]
+                ) =
+                (
+                    f[1].Chromosome[i],
+                    f[0].Chromosome[i]
+                );
             }
         }
     }

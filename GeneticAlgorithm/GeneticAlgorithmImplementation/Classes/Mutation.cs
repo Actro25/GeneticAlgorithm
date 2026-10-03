@@ -1,15 +1,20 @@
-﻿namespace GeneticAlgorithm.Classes;
+﻿using System.Collections;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+
+namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;
 
 public class Mutation : IMutation
 {
     public double QuantityOfMutationsPercentage { get; set; }
     public double ChanceOfMutation { get; set; }
-    private static readonly Random _random = new Random();
+    public IMutationDebug? Debug { get; set; }
+    private readonly Random _random = new Random();
 
-    public Mutation(double quantityOfMutations, double chanceOfMutation)
+    public Mutation(double quantityOfMutations, double chanceOfMutation, IMutationDebug debug)
     {
         QuantityOfMutationsPercentage = quantityOfMutations;
         ChanceOfMutation = chanceOfMutation;
+        Debug = debug;
     }
 
     public void MutateOneGen(ref List<Phenotype[]> chunkedResult)
@@ -27,13 +32,35 @@ public class Mutation : IMutation
         var quantityOfLoops = (int)Math.Round(quantityOfAllBits * QuantityOfMutationsPercentage, MidpointRounding.ToEven);
 
         //Calculation every random mutation in loop
+        
+        //For debugging
+        var logs = new List<IMutationDebug.MutationLogRecord>();
+        
         for (var i = 0; i < quantityOfLoops; i++)
         {
             var chosenPair = _random.Next(quantityOfPairs);
             var chosenPhenotypeInChunk = _random.Next(quantityOfPhenotypesInChunk);
             var chosenBits = _random.Next(quantityOfBits);
             
-            chunkedResult[chosenPair][chosenPhenotypeInChunk].Chromosome[chosenBits] = !chunkedResult[chosenPair][chosenPhenotypeInChunk].Chromosome[chosenBits];
+            var targetChromosome = chunkedResult[chosenPair][chosenPhenotypeInChunk].Chromosome;
+            
+            //For debugging
+            var oldChromosome = targetChromosome.Clone();
+            
+            targetChromosome[chosenBits] = !targetChromosome[chosenBits];
+
+            //For debugging
+            if (Debug != null)
+            {
+                logs.Add(new IMutationDebug.MutationLogRecord(
+                    PhenotypeId: (chosenPair *quantityOfPhenotypesInChunk) + chosenPhenotypeInChunk + 1,
+                    OldChromosome: (BitArray)oldChromosome,
+                    NewChromosome: targetChromosome
+                ));
+            }
         }
+        
+        //For debugging
+        Debug?.PrintMutationTable(logs);
     }
 }

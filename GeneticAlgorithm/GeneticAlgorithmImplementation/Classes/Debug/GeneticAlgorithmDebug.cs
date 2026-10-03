@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Text;
-using GeneticAlgorithm.Interfaces;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
 
-namespace GeneticAlgorithm.Classes;
+namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;
 
 public class GeneticAlgorithmDebug : IGeneticAlgorithmDebug
 {

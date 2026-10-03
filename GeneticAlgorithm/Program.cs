@@ -1,17 +1,17 @@
-﻿using GeneticAlgorithm.Classes;
-using GeneticAlgorithm.Interfaces;
+﻿using GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
 
 namespace GeneticAlgorithm;
 
-public class MyGeneticAlgorithm : GeneticAlgorithm
+public class MyGeneticAlgorithm : GeneticAlgorithmImplementation.GeneticAlgorithm
 {
     public MyGeneticAlgorithm(
-        (int a, int b) distance,
+        (double a, double b) distance,
         double precision,
         IPhenotypesCalculation phenotypesCalculation,
         ICrossover crossover,
         IMutation mutation,
-        IGeneticAlgorithmDebug debug = null) : base(distance, precision, phenotypesCalculation, crossover, mutation, debug)
+        IGeneticAlgorithmDebug? debug = null) : base(distance, precision, phenotypesCalculation, crossover, mutation, debug)
     {
     }
 
@@ -94,15 +94,15 @@ static void InputData()
         break;
     }
 
-    var distance = (A: (int)Math.Round(a, MidpointRounding.ToEven), B: (int)Math.Round(b, MidpointRounding.ToEven));
+    var distance = (A: a, B: b);
     var (bitQuantity, quantityOfChromosome) = GetQuantity(populationPercentage, distance, precision);
 
     IPhenotypesCalculation phenotypesCalculation = new PhenotypesCalculation(quantityOfChromosome);
     ICrossover crossover = new Crossover(bitQuantity);
-    IMutation mutation = new Mutation(quantityOfMutation, chanceOfMutation);
+    IMutation mutation = new Mutation(quantityOfMutation, chanceOfMutation, new MutationDebug());
     IGeneticAlgorithmDebug debug = new GeneticAlgorithmDebug();
     
-    GeneticAlgorithm ga = new MyGeneticAlgorithm(distance, precision, phenotypesCalculation, crossover, mutation, debug);
+    GeneticAlgorithmImplementation.GeneticAlgorithm ga = new MyGeneticAlgorithm(distance, precision, phenotypesCalculation, crossover, mutation, debug);
     ga.GetMinimum();
 }
 

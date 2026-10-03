@@ -1,8 +1,7 @@
 ﻿using System.Collections;
-using System.Text;
-using GeneticAlgorithm.Interfaces;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
 
-namespace GeneticAlgorithm;
+namespace GeneticAlgorithm.GeneticAlgorithmImplementation;
 
 public struct Phenotype
 {
@@ -22,12 +21,12 @@ public interface IFunctionGeneticAlgorithm
 
 public interface IGeneticAlgorithm
 {
-    (int A, int B) Distance { get; set; }
+    (double A, double B) Distance { get; set; }
     List<Phenotype> InitialPopulation { get; set; }
 }
 
 public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgorithm {
-    public (int A, int B) Distance { get; set; }
+    public (double A, double B) Distance { get; set; }
     public double Precision { get; set; } = 1;
     public List<Phenotype> Phenotypes { get; set; } = [];
     public List<Phenotype> InitialPopulation { get; set; } = [];
@@ -42,7 +41,7 @@ public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgo
     private Phenotype _bestPhenotype;
     
     protected GeneticAlgorithm(
-        (int a, int b) distance,
+        (double a, double b) distance,
         double precision,
         IPhenotypesCalculation phenotypesCalculation,
         ICrossover crossover,
@@ -113,7 +112,7 @@ public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgo
             .ToList();
 
         // Updating Data
-        _phenotypesCalculation.UpdatePhenotypes(newPopulation, this, Distance);
+        _phenotypesCalculation.UpdatePhenotypes(newPopulation, this, Distance, Precision);
         
         var previousBest = areWeLookingForMinimum
             ? Phenotypes.OrderBy(f => f.FunctionValue).First()

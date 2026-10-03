@@ -1,4 +1,4 @@
-﻿namespace GeneticAlgorithm;
+﻿namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
 
 public interface ICrossover
 {

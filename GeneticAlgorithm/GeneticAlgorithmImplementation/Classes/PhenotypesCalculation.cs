@@ -1,6 +1,7 @@
 ﻿using System.Collections;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
 
-namespace GeneticAlgorithm.Classes;
+namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;
 
 public class PhenotypesCalculation : IPhenotypesCalculation
 {
@@ -88,11 +89,11 @@ public class PhenotypesCalculation : IPhenotypesCalculation
             .Chunk(2)
             .ToList();
     }
-    public void UpdatePhenotypes(List<Phenotype> newPopulation, IFunctionGeneticAlgorithm functions, (int A, int B) distance)
+    public void UpdatePhenotypes(List<Phenotype> newPopulation, IFunctionGeneticAlgorithm functions, (double A, double B) distance, double precision)
     {
         for (int i = 0; i < newPopulation.Count; i++)
         {
-            int value = BitArrayToInt(newPopulation[i].Chromosome, distance);
+            double value = BitArrayToInt(newPopulation[i].Chromosome, distance, precision);
             double fitness = functions.GetFitness(value * functions.Precision);
             double coefficient = functions.GetCoefficient(fitness);
 
@@ -105,7 +106,7 @@ public class PhenotypesCalculation : IPhenotypesCalculation
             };
         }
     }
-    private int BitArrayToInt(BitArray bitArray, (int A, int B) distance)
+    private double BitArrayToInt(BitArray bitArray, (double A, double B) distance, double precision)
     {
         int offset = 0;
 
@@ -117,7 +118,7 @@ public class PhenotypesCalculation : IPhenotypesCalculation
             }
         }
 
-        int value = distance.A + offset;
+        double value = distance.A + (offset * precision);
 
         if (value < distance.A) value = distance.A;
         if (value > distance.B) value = distance.B;
