@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces.Debug;
 
 namespace GeneticAlgorithm.GeneticAlgorithmImplementation;
 

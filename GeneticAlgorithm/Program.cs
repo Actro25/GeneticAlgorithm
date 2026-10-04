@@ -1,5 +1,7 @@
 ﻿using GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Classes.Debug;
 using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces.Debug;
 
 namespace GeneticAlgorithm;
 
@@ -98,7 +100,7 @@ static void InputData()
     var (bitQuantity, quantityOfChromosome) = GetQuantity(populationPercentage, distance, precision);
 
     IPhenotypesCalculation phenotypesCalculation = new PhenotypesCalculation(quantityOfChromosome);
-    ICrossover crossover = new Crossover(bitQuantity);
+    ICrossover crossover = new Crossover(bitQuantity, new CrossoverDebug(2));
     IMutation mutation = new Mutation(quantityOfMutation, chanceOfMutation, new MutationDebug());
     IGeneticAlgorithmDebug debug = new GeneticAlgorithmDebug();
     

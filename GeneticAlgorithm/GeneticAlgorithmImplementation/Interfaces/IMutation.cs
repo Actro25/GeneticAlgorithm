@@ -1,4 +1,4 @@
-﻿namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+﻿namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces.Debug;
 
 public interface IMutation
 {

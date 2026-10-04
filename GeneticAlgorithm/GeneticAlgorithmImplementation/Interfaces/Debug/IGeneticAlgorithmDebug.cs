@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Text;
 
-namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces.Debug;
 
 public interface IGeneticAlgorithmDebug
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces.Debug;
 
 public interface IMutationDebug
 {
@@ -10,5 +10,5 @@ public interface IMutationDebug
         BitArray NewChromosome
     );
 
-    void PrintMutationTable(List<MutationLogRecord> logs);
+    void PrintMutationLog(List<MutationLogRecord> logs);
 } 

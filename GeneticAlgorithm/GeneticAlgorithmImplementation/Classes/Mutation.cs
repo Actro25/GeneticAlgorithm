@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces.Debug;
 
 namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;
 
@@ -10,7 +10,7 @@ public class Mutation : IMutation
     public IMutationDebug? Debug { get; set; }
     private readonly Random _random = new Random();
 
-    public Mutation(double quantityOfMutations, double chanceOfMutation, IMutationDebug debug)
+    public Mutation(double quantityOfMutations, double chanceOfMutation, IMutationDebug? debug = null)
     {
         QuantityOfMutationsPercentage = quantityOfMutations;
         ChanceOfMutation = chanceOfMutation;
@@ -53,7 +53,7 @@ public class Mutation : IMutation
             if (Debug != null)
             {
                 logs.Add(new IMutationDebug.MutationLogRecord(
-                    PhenotypeId: (chosenPair *quantityOfPhenotypesInChunk) + chosenPhenotypeInChunk + 1,
+                    PhenotypeId: (chosenPair * quantityOfPhenotypesInChunk) + chosenPhenotypeInChunk + 1,
                     OldChromosome: (BitArray)oldChromosome,
                     NewChromosome: targetChromosome
                 ));
@@ -61,6 +61,6 @@ public class Mutation : IMutation
         }
         
         //For debugging
-        Debug?.PrintMutationTable(logs);
+        Debug?.PrintMutationLog(logs);
     }
 }

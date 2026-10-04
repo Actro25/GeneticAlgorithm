@@ -1,13 +1,13 @@
 ﻿using System.Collections;
-using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
+using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces.Debug;
 
-namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;
+namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Classes.Debug;
 
 public class MutationDebug : IMutationDebug
 {
-    public void PrintMutationTable(List<IMutationDebug.MutationLogRecord> logs)
+    public void PrintMutationLog(List<IMutationDebug.MutationLogRecord> logs)
     {
-        if (logs == null || logs.Count == 0)
+        if (logs.Count == 0)
         {
             Console.WriteLine("No mutations occurred.");
             return;
