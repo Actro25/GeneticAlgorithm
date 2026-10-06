@@ -30,12 +30,11 @@ public class Mutation : IMutation
         var quantityOfAllBits = quantityOfBits * quantityOfPhenotypesInChunk * quantityOfPairs;
         
         var quantityOfLoops = (int)Math.Round(quantityOfAllBits * QuantityOfMutationsPercentage, MidpointRounding.ToEven);
-
-        //Calculation every random mutation in loop
         
         //For debugging
         var logs = new List<IMutationDebug.MutationLogRecord>();
         
+        //Calculation every random mutation in loop
         for (var i = 0; i < quantityOfLoops; i++)
         {
             var chosenPair = _random.Next(quantityOfPairs);
@@ -48,14 +47,14 @@ public class Mutation : IMutation
             var oldChromosome = targetChromosome.Clone();
             
             targetChromosome[chosenBits] = !targetChromosome[chosenBits];
-
+            
             //For debugging
             if (Debug != null)
             {
                 logs.Add(new IMutationDebug.MutationLogRecord(
                     PhenotypeId: (chosenPair * quantityOfPhenotypesInChunk) + chosenPhenotypeInChunk + 1,
                     OldChromosome: (BitArray)oldChromosome,
-                    NewChromosome: targetChromosome
+                    NewChromosome: (BitArray)targetChromosome.Clone()
                 ));
             }
         }
