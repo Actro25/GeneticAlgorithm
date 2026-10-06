@@ -62,9 +62,11 @@ public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgo
     public void GetMinimum(int maxGenerations = 1000)
     {
         LoadPhenotypes();
+        
         DebugPhenotypes(InitialPopulation, "Initial population");
         
         GetNewPopulation(true);
+        
         DebugPhenotypes(Phenotypes, "№0 Generation");
         
         _bestPhenotype = Phenotypes
@@ -74,7 +76,9 @@ public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgo
         for (int generation = 1; generation < maxGenerations; generation++)
         {
             GetNewPopulation(false);
+            
             DebugPhenotypes(Phenotypes, $"№{generation} Generation");
+            
             var currentBest = Phenotypes.OrderBy(f => f.FunctionValue).First();
 
             if (currentBest.FunctionValue < _bestPhenotype.FunctionValue)
@@ -84,7 +88,7 @@ public abstract class GeneticAlgorithm : IGeneticAlgorithm, IFunctionGeneticAlgo
         }
 
         Console.WriteLine(
-            $"Answer is: {_bestPhenotype.Value * Precision}, " +
+            $"Answer is: {_bestPhenotype.Value}, " +
             $"Function value: {_bestPhenotype.FunctionValue}");
     }
     

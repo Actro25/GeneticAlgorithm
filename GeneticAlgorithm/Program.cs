@@ -5,9 +5,9 @@ using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces.Debug;
 
 namespace GeneticAlgorithm;
 
-public class MyGeneticAlgorithm : GeneticAlgorithmImplementation.GeneticAlgorithm
+public class MyGeneticAlgorithm1 : GeneticAlgorithmImplementation.GeneticAlgorithm
 {
-    public MyGeneticAlgorithm(
+    public MyGeneticAlgorithm1(
         (double a, double b) distance,
         double precision,
         IPhenotypesCalculation phenotypesCalculation,
@@ -28,6 +28,29 @@ public class MyGeneticAlgorithm : GeneticAlgorithmImplementation.GeneticAlgorith
     }
 }
 
+public class MyGeneticAlgorithm2 : GeneticAlgorithmImplementation.GeneticAlgorithm
+{
+    public MyGeneticAlgorithm2(
+        (double a, double b) distance,
+        double precision,
+        IPhenotypesCalculation phenotypesCalculation,
+        ICrossover crossover,
+        IMutation mutation,
+        IGeneticAlgorithmDebug? debug = null) : base(distance, precision, phenotypesCalculation, crossover, mutation, debug)
+    {
+    }
+
+    public override double GetFitness(double x)
+    {
+        return 0.2 * Math.Pow(x, 4) + 0.3 * Math.Pow(x, 3) + (-2.4 * Math.Pow(x, 2)) + (-0.6 * x) + 20;
+    }
+
+    public override double GetCoefficient(double fitness)
+    {
+        return 1.0 / (1.0 + fitness);
+    }
+}
+
 class Program
 {
     static void Main(string[] args)
@@ -38,6 +61,8 @@ class Program
 static void InputData()
 {
     double a, b, precision, chanceOfMutation, populationPercentage, quantityOfMutation;
+    int loops;
+    bool isTableMod;
     var inv = System.Globalization.CultureInfo.InvariantCulture;
     var style = System.Globalization.NumberStyles.Float;
 
@@ -96,16 +121,41 @@ static void InputData()
         break;
     }
 
+    while (true)
+    {
+        Console.Write("Enter quantity of loops that will be done to conclude result: ");
+        string text = (Console.ReadLine() ?? "");
+        if (!int.TryParse(text, style, inv, out loops) || loops <= 0)
+        {
+            Console.WriteLine("Error: enter a number greater than 0");
+            continue;
+        }
+        break;
+    }
+    
+    while (true)
+    {
+        Console.Write("Do you want see tables? (false / true, If you enter true program will be much slower and will be waiting for your actions): ");
+        string text = (Console.ReadLine() ?? "");
+        if (!bool.TryParse(text, out isTableMod))
+        {
+            Console.WriteLine("Error: enter only false / true");
+            continue;
+        }
+        break;
+    }
+
     var distance = (A: a, B: b);
     var (bitQuantity, quantityOfChromosome) = GetQuantity(populationPercentage, distance, precision);
 
     IPhenotypesCalculation phenotypesCalculation = new PhenotypesCalculation(quantityOfChromosome);
-    ICrossover crossover = new Crossover(bitQuantity, new CrossoverDebug(2));
-    IMutation mutation = new Mutation(quantityOfMutation, chanceOfMutation, new MutationDebug());
-    IGeneticAlgorithmDebug debug = new GeneticAlgorithmDebug();
+    ICrossover crossover = new Crossover(bitQuantity, isTableMod ? new CrossoverDebug(2) : null);
+    IMutation mutation = new Mutation(quantityOfMutation, chanceOfMutation, isTableMod ? new MutationDebug() : null);
+    IGeneticAlgorithmDebug? debug =  isTableMod ? new GeneticAlgorithmDebug() : null;
     
-    GeneticAlgorithmImplementation.GeneticAlgorithm ga = new MyGeneticAlgorithm(distance, precision, phenotypesCalculation, crossover, mutation, debug);
-    ga.GetMinimum();
+    GeneticAlgorithmImplementation.GeneticAlgorithm ga = new MyGeneticAlgorithm2(distance, precision, phenotypesCalculation, crossover, mutation, debug);
+    
+    ga.GetMinimum(loops);
 }
 
     static (int, int) GetQuantity(double populationPercentage, (double A, double B) distance, double precision)

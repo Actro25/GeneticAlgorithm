@@ -38,7 +38,7 @@ public class Mutation : IMutation
         for (var i = 0; i < quantityOfLoops; i++)
         {
             var chosenPair = _random.Next(quantityOfPairs);
-            var chosenPhenotypeInChunk = _random.Next(quantityOfPhenotypesInChunk);
+            var chosenPhenotypeInChunk = _random.Next(chunkedResult[chosenPair].Length);
             var chosenBits = _random.Next(quantityOfBits);
             
             var targetChromosome = chunkedResult[chosenPair][chosenPhenotypeInChunk].Chromosome;
