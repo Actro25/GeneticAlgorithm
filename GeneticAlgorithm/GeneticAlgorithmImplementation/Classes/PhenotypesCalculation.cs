@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using GeneticAlgorithm.GeneticAlgorithmImplementation.Extensions;
 using GeneticAlgorithm.GeneticAlgorithmImplementation.Interfaces;
 
 namespace GeneticAlgorithm.GeneticAlgorithmImplementation.Classes;

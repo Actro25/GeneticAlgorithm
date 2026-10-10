@@ -24,7 +24,8 @@ public class GeneticAlgorithmDebug : IGeneticAlgorithmDebug
             return;
         }
 
-        const int totalWidth = 74;
+        // Загальна ширина таблиці чітко зафіксована на 88 символів
+        const int totalWidth = 88;
 
         string headerTitle = title.Length > totalWidth ? title[..(totalWidth - 3)] + "..." : title;
     
@@ -34,12 +35,13 @@ public class GeneticAlgorithmDebug : IGeneticAlgorithmDebug
 
         Console.ForegroundColor = ConsoleColor.Cyan;
     
-        Console.WriteLine("┌───────────────────────────────────────────────────────────────────────────┐");
-        Console.WriteLine($"│{centeredTitle} │");
-        Console.WriteLine("├──────┬───────────────────────┬─────────────┬───────────────┬──────────────┤");
+        // Верхня рамка (рівно 88 символів усередині)
+        Console.WriteLine("┌──────────────────────────────────────────────────────────────────────────────────────────┐");
+        Console.WriteLine($"│{centeredTitle}│");
+        Console.WriteLine("├──────┬───────────────────────┬──────────────────────────┬───────────────┬──────────────┤");
     
-        Console.WriteLine("│  №   │ Chromosome (BitArray) │   Vector    │ f(x)'s Value  │ Coefficient  │");
-        Console.WriteLine("├──────┼───────────────────────┼─────────────┼───────────────┬──────────────┤");
+        Console.WriteLine("│  №   │ Chromosome (BitArray) │          Vector          │ f(x)'s Value  │ Coefficient  │");
+        Console.WriteLine("├──────┼───────────────────────┼──────────────────────────┼───────────────┬──────────────┤");
         Console.ResetColor();
 
         for (int i = 0; i < phenotypes.Count; i++)
@@ -47,12 +49,14 @@ public class GeneticAlgorithmDebug : IGeneticAlgorithmDebug
             var p = phenotypes[i];
             string chromoStr = p.Chromosome != null ? ToBitString(p.Chromosome) : "null";
 
-            string vectorStr = p.Vector != null 
-                ? $"[{string.Join(", ", p.Vector.Select(v => v.ToString("F4")))}]" 
-                : "null";
+            string vectorStr = "null";
+            if (p.Vector != null)
+            {
+                vectorStr = $"[{string.Join(", ", p.Vector.Select(v => v.ToString("G4")))}]";
+            }
 
             Console.WriteLine(
-                "│ {0,-4} │ {1,-21} │ {2,11} │ {3,13:F4} │ {4,12:F4} │",
+                "│ {0,-4} │ {1,-21} │ {2,-24} │ {3,13:G4} │ {4,12:G4} │",
                 i + 1,
                 chromoStr,
                 vectorStr,
@@ -62,7 +66,8 @@ public class GeneticAlgorithmDebug : IGeneticAlgorithmDebug
         }
 
         Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine("└──────┴───────────────────────┴─────────────┴───────────────┴──────────────┘");
+        // Нижня рамка (рівно 88 символів)
+        Console.WriteLine("└──────┴───────────────────────┴──────────────────────────┴───────────────┴──────────────┘");
         Console.ResetColor();
     }
 }
