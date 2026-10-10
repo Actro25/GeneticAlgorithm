@@ -10,13 +10,12 @@ public class Crossover : ICrossover
     public ICrossoverDebug? Debug { get; set; }
     private static readonly Random _random = new Random();
 
-    public Crossover(int bitQuantities, ICrossoverDebug? debug = null)
+    public Crossover(ICrossoverDebug? debug = null)
     {
-        BitQuantities = bitQuantities;
         Debug = debug;
     }
 
-    public void CrossoverWithOnePoint(List<Phenotype> phenotypes, ref List<Phenotype[]> chunkedResult)
+    public void CrossoverBits(List<Phenotype> phenotypes, ref List<Phenotype[]> chunkedResult)
     {
         var logs = new List<ICrossoverDebug.CrossoverLogRecord>();
         var chunkIndex = 0;
@@ -31,15 +30,17 @@ public class Crossover : ICrossover
                 oldChromosome.Add(chromosome.Chromosome.Clone() as BitArray);
             }
 
-            //If there is last element that doesn't have pair we just skep him.
+            // If we have only one element in pair we skip it.
             if (f.Length == 1)
                 continue;
 
-            //The point where we are start from.
-            //Here we're getting random point from 0 to bitQuantities.
+            /*
+             * It's a point where we start doing crossover from.
+             * Random points gets from 0 to BitQuantities - 1.
+             */
             var point = _random.Next(0, BitQuantities - 1);
 
-            //Here we're doing Krosover to the point.
+            // Here we're doing Crossover for the point.
             for (var i = point; i < BitQuantities; i++)
             {
                 (

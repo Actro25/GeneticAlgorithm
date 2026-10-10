@@ -17,7 +17,7 @@ public class Mutation : IMutation
         Debug = debug;
     }
 
-    public void MutateOneGen(ref List<Phenotype[]> chunkedResult)
+    public void Mutate(ref List<Phenotype[]> chunkedResult)
     {
         if (_random.NextDouble() > ChanceOfMutation)
             return;
@@ -44,7 +44,7 @@ public class Mutation : IMutation
             var targetChromosome = chunkedResult[chosenPair][chosenPhenotypeInChunk].Chromosome;
             
             //For debugging
-            var oldChromosome = targetChromosome.Clone();
+            var oldChromosome = new BitArray(targetChromosome);
             
             targetChromosome[chosenBits] = !targetChromosome[chosenBits];
             
@@ -53,8 +53,8 @@ public class Mutation : IMutation
             {
                 logs.Add(new IMutationDebug.MutationLogRecord(
                     PhenotypeId: (chosenPair * quantityOfPhenotypesInChunk) + chosenPhenotypeInChunk + 1,
-                    OldChromosome: (BitArray)oldChromosome,
-                    NewChromosome: (BitArray)targetChromosome.Clone()
+                    OldChromosome: oldChromosome,
+                    NewChromosome: new BitArray(targetChromosome)
                 ));
             }
         }

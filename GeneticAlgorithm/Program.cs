@@ -8,7 +8,7 @@ namespace GeneticAlgorithm;
 public class MyGeneticAlgorithm1 : GeneticAlgorithmImplementation.GeneticAlgorithm
 {
     public MyGeneticAlgorithm1(
-        (double a, double b) distance,
+        List<(double a, double b)> distance,
         double precision,
         IPhenotypesCalculation phenotypesCalculation,
         ICrossover crossover,
@@ -17,9 +17,9 @@ public class MyGeneticAlgorithm1 : GeneticAlgorithmImplementation.GeneticAlgorit
     {
     }
 
-    public override double GetFitness(double x)
+    public override double GetFitness(List<double> point)
     {
-        return x * x;
+        return point.First() * point.First();
     }
 
     public override double GetCoefficient(double fitness)
@@ -31,7 +31,7 @@ public class MyGeneticAlgorithm1 : GeneticAlgorithmImplementation.GeneticAlgorit
 public class MyGeneticAlgorithm2 : GeneticAlgorithmImplementation.GeneticAlgorithm
 {
     public MyGeneticAlgorithm2(
-        (double a, double b) distance,
+        List<(double a, double b)> distance,
         double precision,
         IPhenotypesCalculation phenotypesCalculation,
         ICrossover crossover,
@@ -40,9 +40,64 @@ public class MyGeneticAlgorithm2 : GeneticAlgorithmImplementation.GeneticAlgorit
     {
     }
 
-    public override double GetFitness(double x)
+    public override double GetFitness(List<double> point)
     {
-        return 0.2 * Math.Pow(x, 4) + 0.3 * Math.Pow(x, 3) + (-2.4 * Math.Pow(x, 2)) + (-0.6 * x) + 20;
+        return 0.2 * Math.Pow(point.First(), 4) + 0.3 * Math.Pow(point.First(), 3) + (-2.4 * Math.Pow(point.First(), 2)) + (-0.6 * point.First()) + 20;
+    }
+
+    public override double GetCoefficient(double fitness)
+    {
+        return 1.0 / (1.0 + fitness);
+    }
+}
+
+public class MyGeneticAlgorithm3 : GeneticAlgorithmImplementation.GeneticAlgorithm
+{
+    public MyGeneticAlgorithm3(
+        List<(double a, double b)> distance,
+        double precision,
+        IPhenotypesCalculation phenotypesCalculation,
+        ICrossover crossover,
+        IMutation mutation,
+        IGeneticAlgorithmDebug? debug = null) : base(distance, precision, phenotypesCalculation, crossover, mutation, debug)
+    {
+    }
+
+    public override double GetFitness(List<double> point)
+    {
+        return Math.Pow(Math.Pow(point[0], 2) + Math.Pow(point[1], 2), 1.0/3.0);
+    }
+
+    public override double GetCoefficient(double fitness)
+    {
+        return 1.0 / (1.0 + fitness);
+    }
+}
+
+public class MyGeneticAlgorithm4 : GeneticAlgorithmImplementation.GeneticAlgorithm
+{
+    public MyGeneticAlgorithm4(
+        List<(double a, double b)> distance,
+        double precision,
+        IPhenotypesCalculation phenotypesCalculation,
+        ICrossover crossover,
+        IMutation mutation,
+        IGeneticAlgorithmDebug? debug = null) : base(distance, precision, phenotypesCalculation, crossover, mutation, debug)
+    {
+    }
+
+    public override double GetFitness(List<double> point)
+    {
+        double dx = point[0] - -1;
+        double dy = point[1] - 1;
+
+        return 1 * Math.Pow(dx, 4) 
+               + 1 * Math.Pow(dy, 4) 
+               + -2 * Math.Pow(dx, 3) 
+               + 2 * Math.Pow(dy, 2) 
+               + -10 * dx * dy 
+               + 0.25 * dx 
+               + 20;
     }
 
     public override double GetCoefficient(double fitness)
@@ -60,7 +115,8 @@ class Program
 
 static void InputData()
 {
-    double a, b, precision, chanceOfMutation, populationPercentage, quantityOfMutation;
+    var distances = new List<(double A, double B)>();
+    double precision, chanceOfMutation, populationPercentage, quantityOfMutation;
     int loops;
     bool isTableMod;
     var inv = System.Globalization.CultureInfo.InvariantCulture;
@@ -68,18 +124,51 @@ static void InputData()
 
     while (true)
     {
-        Console.Write("Enter A: ");
-        string text = (Console.ReadLine() ?? "").Replace(',', '.');
-        if (double.TryParse(text, style, inv, out a) && double.IsFinite(a)) break;
-        Console.WriteLine("Error: enter a number, for example -5 or 0.5.");
-    }
+        if (distances.Count > 0)
+        {
+            Console.WriteLine("\n┌────────────────────────────────────────┐");
+            Console.WriteLine("│       Current Entered Dimensions       │");
+            Console.WriteLine("├────────┬────────────────┬──────────────┤");
+            Console.WriteLine("│ Axis № │      Min (A)   │    Max (B)   │");
+            Console.WriteLine("├────────┼────────────────┼──────────────┤");
+            for (int i = 0; i < distances.Count; i++)
+            {
+                Console.WriteLine("│ {0,-6} │ {1,14:F4} │ {2,12:F4} │", i + 1, distances[i].A, distances[i].B);
+            }
+            Console.WriteLine("└────────┴────────────────┴──────────────┘\n");
+        }
 
-    while (true)
-    {
-        Console.Write("Enter B (greater than A): ");
-        string text = (Console.ReadLine() ?? "").Replace(',', '.');
-        if (double.TryParse(text, style, inv, out b) && double.IsFinite(b) && b > a) break;
-        Console.WriteLine("Error: enter a number greater than A.");
+        Console.WriteLine($"--- Configuring Axis {distances.Count + 1} ---");
+
+        double a, b;
+
+        while (true)
+        {
+            Console.Write($"Enter A for axis {distances.Count + 1}: ");
+            string text = (Console.ReadLine() ?? "").Replace(',', '.');
+            if (double.TryParse(text, style, inv, out a) && double.IsFinite(a)) 
+                break;
+            Console.WriteLine("Error: enter a valid number, for example -5 or 0.5.");
+        }
+
+        while (true)
+        {
+            Console.Write($"Enter B for axis {distances.Count + 1} (must be greater than {a}): ");
+            string text = (Console.ReadLine() ?? "").Replace(',', '.');
+            if (double.TryParse(text, style, inv, out b) && double.IsFinite(b) && b > a) 
+                break;
+            Console.WriteLine("Error: enter a number greater than A.");
+        }
+
+        distances.Add((a, b));
+
+        Console.Write("\nDo you want to add another axis? (y/n): ");
+        string? answer = Console.ReadLine()?.Trim().ToLower();
+    
+        if (answer != "y" && answer != "yes")
+        {
+            break;
+        }
     }
 
     while (true)
@@ -145,34 +234,29 @@ static void InputData()
         break;
     }
 
-    var distance = (A: a, B: b);
-    var (bitQuantity, quantityOfChromosome) = GetQuantity(populationPercentage, distance, precision);
+    var quantityOfChromosome = GetQuantityOfChromosome(populationPercentage, distances, precision);
 
     IPhenotypesCalculation phenotypesCalculation = new PhenotypesCalculation(quantityOfChromosome);
-    ICrossover crossover = new Crossover(bitQuantity, isTableMod ? new CrossoverDebug(2) : null);
+    ICrossover crossover = new Crossover(isTableMod ? new CrossoverDebug(2) : null);
     IMutation mutation = new Mutation(quantityOfMutation, chanceOfMutation, isTableMod ? new MutationDebug() : null);
     IGeneticAlgorithmDebug? debug =  isTableMod ? new GeneticAlgorithmDebug() : null;
     
-    GeneticAlgorithmImplementation.GeneticAlgorithm ga = new MyGeneticAlgorithm2(distance, precision, phenotypesCalculation, crossover, mutation, debug);
+    GeneticAlgorithmImplementation.GeneticAlgorithm ga = new MyGeneticAlgorithm4(distances, precision, phenotypesCalculation, crossover, mutation, debug);
     
     ga.GetMinimum(loops);
 }
 
-    static (int, int) GetQuantity(double populationPercentage, (double A, double B) distance, double precision)
+    static int GetQuantityOfChromosome(double populationPercentage, List<(double A, double B)> distances, double precision)
     {
-        var rangeSize = (Math.Abs(distance.B - distance.A) / precision) + 1;
-
-        for (int i = 1; ; i++)
+        var totalStateSpace = 1D;
+        foreach (var distance in distances)
         {
-            if (Math.Pow(2.0, i) >= rangeSize)
-            {
-                return (
-                    i,
-                    (int)Math.Round(
-                        rangeSize * populationPercentage,
-                        MidpointRounding.ToEven)
-                );
-            }
+            double pointsPerAxis = (Math.Abs(distance.B - distance.A) / precision) + 1;
+            totalStateSpace *= pointsPerAxis;
         }
+
+        return (int)Math.Round(
+            totalStateSpace * populationPercentage,
+            MidpointRounding.ToEven);
     }
 }

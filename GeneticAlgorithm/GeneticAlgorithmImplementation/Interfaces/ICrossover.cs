@@ -6,5 +6,5 @@ public interface ICrossover
 {
     int BitQuantities { get; set; }
     public ICrossoverDebug? Debug { get; set; }
-    public void CrossoverWithOnePoint(List<Phenotype> phenotypes, ref List<Phenotype[]> chunkedResult);
+    public void CrossoverBits(List<Phenotype> phenotypes, ref List<Phenotype[]> chunkedResult);
 }

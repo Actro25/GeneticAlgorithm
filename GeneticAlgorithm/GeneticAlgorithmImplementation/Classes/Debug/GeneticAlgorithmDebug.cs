@@ -18,9 +18,9 @@ public class GeneticAlgorithmDebug : IGeneticAlgorithmDebug
     
     public void PrintPhenotypes(List<Phenotype> phenotypes, string title)
     {
-        if (phenotypes == null || phenotypes.Count == 0)
+        if (phenotypes.Count == 0)
         {
-            Console.WriteLine("Список фенотипів порожній.");
+            Console.WriteLine("There isn't any phenotypes.");
             return;
         }
 
@@ -38,8 +38,8 @@ public class GeneticAlgorithmDebug : IGeneticAlgorithmDebug
         Console.WriteLine($"│{centeredTitle} │");
         Console.WriteLine("├──────┬───────────────────────┬─────────────┬───────────────┬──────────────┤");
     
-        Console.WriteLine("│  №   │ Chromosome (BitArray) │  X's Value  │ f(x)'s Value  │ Coefficient  │");
-        Console.WriteLine("├──────┼───────────────────────┼─────────────┼───────────────┼──────────────┤");
+        Console.WriteLine("│  №   │ Chromosome (BitArray) │   Vector    │ f(x)'s Value  │ Coefficient  │");
+        Console.WriteLine("├──────┼───────────────────────┼─────────────┼───────────────┬──────────────┤");
         Console.ResetColor();
 
         for (int i = 0; i < phenotypes.Count; i++)
@@ -47,11 +47,15 @@ public class GeneticAlgorithmDebug : IGeneticAlgorithmDebug
             var p = phenotypes[i];
             string chromoStr = p.Chromosome != null ? ToBitString(p.Chromosome) : "null";
 
+            string vectorStr = p.Vector != null 
+                ? $"[{string.Join(", ", p.Vector.Select(v => v.ToString("F4")))}]" 
+                : "null";
+
             Console.WriteLine(
-                "│ {0,-4} │ {1,-21} │ {2,11:F4} │ {3,13:F4} │ {4,12:F4} │",
+                "│ {0,-4} │ {1,-21} │ {2,11} │ {3,13:F4} │ {4,12:F4} │",
                 i + 1,
                 chromoStr,
-                p.Value,
+                vectorStr,
                 p.FunctionValue,
                 p.Coefficient
             );
